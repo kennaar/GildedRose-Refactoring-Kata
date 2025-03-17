@@ -25,40 +25,63 @@ public class GildedRose
 
     private void UpdateQuality(int i)
     {
-        if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+        if (IsQualityDecreasingItem(i))
         {
-            if (Items[i].Quality > 0)
+            if (IsNotLegendaryItem(i))
             {
-                if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                {
-                    Items[i].Quality = Items[i].Quality - 1;
-                }
+                DecreaseQualityForItem(i);
             }
         } else {
-            if (Items[i].Quality < 50)
+            IncreaseQualityForItem(i);
+
+            if (IsBackstagePass(i))
             {
-                Items[i].Quality = Items[i].Quality + 1;
-
-                if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
+                if (Items[i].SellIn < 11)
                 {
-                    if (Items[i].SellIn < 11)
-                    {
-                        if (Items[i].Quality < 50)
-                        {
-                            Items[i].Quality = Items[i].Quality + 1;
-                        }
-                    }
+                    IncreaseQualityForItem(i);
+                }
 
-                    if (Items[i].SellIn < 6)
-                    {
-                        if (Items[i].Quality < 50)
-                        {
-                            Items[i].Quality = Items[i].Quality + 1;
-                        }
-                    }
+                if (Items[i].SellIn < 6)
+                {
+                    IncreaseQualityForItem(i);
                 }
             }
         }
+    }
+
+    private void DecreaseQualityForItem(int i)
+    {
+        if (Items[i].Quality <= 0)
+        {
+            return;
+        }
+        
+        Items[i].Quality--;
+    }
+    
+    private void IncreaseQualityForItem(int i)
+    {
+        if (Items[i].Quality >= 50)
+        {
+            return;
+        }
+        
+        Items[i].Quality++;
+    }
+
+    private bool IsBackstagePass(int i)
+    {
+        return Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
+    }
+
+    private bool IsNotLegendaryItem(int i)
+    {
+        return Items[i].Name != "Sulfuras, Hand of Ragnaros";
+    }
+
+    private bool IsQualityDecreasingItem(int i)
+    {
+        return Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert";
     }
 
     private void UpdateQualityIfSellInDateReached(int i)
