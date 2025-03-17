@@ -13,4 +13,14 @@ public class Item
         get => _quality;
         set => _quality = Math.Clamp(value, 0, int.MaxValue);
     }
+    
+    public void DecreaseQuality(int amount = 1)
+    {
+        Quality -= amount;
+    }
+    
+    public void IncreaseQuality(int amount = 1)
+    {
+        Quality += amount;
+    }
 }
