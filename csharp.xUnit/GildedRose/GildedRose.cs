@@ -19,10 +19,7 @@ public class GildedRose
             {
                 if (Items[i].Quality > 0)
                 {
-                    if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                    {
-                        Items[i].DecreaseQuality();
-                    }
+                    Items[i].DecreaseQuality();
                 }
             }
             else
@@ -52,10 +49,7 @@ public class GildedRose
                 }
             }
 
-            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-            {
-                Items[i].DecreaseSellIn();
-            }
+            Items[i].DecreaseSellIn();
 
             if (Items[i].SellIn < 0)
             {
@@ -65,10 +59,7 @@ public class GildedRose
                     {
                         if (Items[i].Quality > 0)
                         {
-                            if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                            {
-                                Items[i].DecreaseQuality();
-                            }
+                            Items[i].DecreaseQuality();
                         }
                     }
                     else
