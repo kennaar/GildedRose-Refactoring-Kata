@@ -27,29 +27,37 @@ public class GildedRose
     {
         if (IsQualityDecreasingItem(i))
         {
-            if (IsNotLegendaryItem(i))
+            if (IsLegendaryItem(i))
             {
-                DecreaseQualityForItem(i);
+                return;
             }
-        } else {
-            IncreaseQualityForItem(i);
 
-            if (IsBackstagePass(i))
-            {
-                if (Items[i].SellIn < 11)
-                {
-                    IncreaseQualityForItem(i);
-                }
+            DecreaseQualityOfItem(i);
 
-                if (Items[i].SellIn < 6)
-                {
-                    IncreaseQualityForItem(i);
-                }
-            }
+            return;
+        }
+
+        IncreaseQualityOfItem(i);
+
+        if (!IsBackstagePass(i))
+        {
+            return;
+        }
+        
+        
+        // I could turn this into a switch (true), but does that improve anything?
+        if (Items[i].SellIn < 11)
+        {
+            IncreaseQualityOfItem(i);
+        }
+
+        if (Items[i].SellIn < 6)
+        {
+            IncreaseQualityOfItem(i);
         }
     }
 
-    private void DecreaseQualityForItem(int i)
+    private void DecreaseQualityOfItem(int i)
     {
         if (Items[i].Quality <= 0)
         {
@@ -68,7 +76,7 @@ public class GildedRose
         };
     }
     
-    private void IncreaseQualityForItem(int i)
+    private void IncreaseQualityOfItem(int i)
     {
         if (Items[i].Quality >= 50)
         {
@@ -83,9 +91,9 @@ public class GildedRose
         return Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
     }
 
-    private bool IsNotLegendaryItem(int i)
+    private bool IsLegendaryItem(int i)
     {
-        return Items[i].Name != "Sulfuras, Hand of Ragnaros";
+        return Items[i].Name == "Sulfuras, Hand of Ragnaros";
     }
 
     private bool IsQualityDecreasingItem(int i)
@@ -95,38 +103,45 @@ public class GildedRose
 
     private void UpdateQualityIfSellInDateReached(int i)
     {
-        if (Items[i].SellIn < 0)
+        if (Items[i].SellIn >= 0)
         {
-            if (Items[i].Name != "Aged Brie")
-            {
-                if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                {
-                    if (Items[i].Quality > 0)
-                    {
-                        if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                        {
-                            Items[i].Quality = Items[i].Quality - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                }
-            } else {
-                if (Items[i].Quality < 50)
-                {
-                    Items[i].Quality = Items[i].Quality + 1;
-                }
-            }
+            return;
         }
+
+        if (!IsRegularQualityIncreasingItem(i))
+        {
+            IncreaseQualityOfItem(i);
+
+            return;
+        }
+
+        if (IsBackstagePass(i))
+        {
+            Items[i].Quality = 0;
+
+            return;
+        }
+
+        if (IsLegendaryItem(i))
+        {
+            return;
+        }
+
+        DecreaseQualityOfItem(i);
+    }
+    
+    private bool IsRegularQualityIncreasingItem(int i)
+    {
+        return Items[i].Name != "Aged Brie";
     }
 
     private void DecreaseSellIn(int i)
     {
-        if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
+        if (Items[i].Name == "Sulfuras, Hand of Ragnaros")
         {
-            Items[i].SellIn = Items[i].SellIn - 1;
+            return;
         }
+
+        Items[i].SellIn--;
     }
 }
