@@ -56,7 +56,16 @@ public class GildedRose
             return;
         }
         
-        Items[i].Quality--;
+        Items[i].Quality -= GetQualityDegradationValue(i);
+    }
+
+    private int GetQualityDegradationValue(int i)
+    {
+        return Items[i].Name switch
+        {
+            "Conjured" => 2,
+            _ => 1
+        };
     }
     
     private void IncreaseQualityForItem(int i)
