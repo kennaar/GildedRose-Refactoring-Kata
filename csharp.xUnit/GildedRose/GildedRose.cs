@@ -54,7 +54,7 @@ public class GildedRose
 
             if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
             {
-                Items[i].SellIn = Items[i].SellIn - 1;
+                Items[i].DecreaseSellIn();
             }
 
             if (Items[i].SellIn < 0)

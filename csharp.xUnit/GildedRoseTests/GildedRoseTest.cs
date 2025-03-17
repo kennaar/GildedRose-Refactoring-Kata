@@ -29,4 +29,15 @@ public class GildedRoseTest
         Assert.True(item.Quality >= 0);
         Assert.Equal(expectedQuality, item.Quality);
     }
+    
+    [Theory]
+    [InlineData(-1, -1)]
+    [InlineData(0, 0)]
+    public void TheLegendaryItemSellInNeverChanges(int sellIn, int expectedSellIn)
+    {
+        IList<Item> items = new List<Item> { new LegendaryItem("foo", sellIn) };
+        GildedRose app = new GildedRose(items);
+        app.UpdateQuality();
+        Assert.Equal(expectedSellIn, items[0].SellIn);
+    }
 }
