@@ -4,6 +4,12 @@ namespace GildedRoseKata;
 
 public class GildedRose
 {
+    private const int MinimumQuality = 0;
+    private const int MaximumQuality = 50;
+    // Not thrilled about this name
+    private const int QualityVaryValue = 1;
+    private const int ConjuredQualityDegradationMultiplier = 2;
+    
     IList<Item> Items;
 
     public GildedRose(IList<Item> Items)
@@ -59,7 +65,7 @@ public class GildedRose
 
     private void DecreaseQualityOfItem(int i)
     {
-        if (Items[i].Quality <= 0)
+        if (Items[i].Quality <= MinimumQuality)
         {
             return;
         }
@@ -69,21 +75,24 @@ public class GildedRose
 
     private int GetQualityDegradationValue(int i)
     {
-        return Items[i].Name switch
+        // This comparison should probably be improved, not sure yet what makes an item "conjured"
+        var multiplier = Items[i].Name switch
         {
-            "Conjured" => 2,
+            "Conjured" => ConjuredQualityDegradationMultiplier,
             _ => 1
         };
+        
+        return QualityVaryValue * multiplier;
     }
     
     private void IncreaseQualityOfItem(int i)
     {
-        if (Items[i].Quality >= 50)
+        if (Items[i].Quality >= MaximumQuality)
         {
             return;
         }
         
-        Items[i].Quality++;
+        Items[i].Quality += QualityVaryValue;
     }
 
     private bool IsBackstagePass(int i)
