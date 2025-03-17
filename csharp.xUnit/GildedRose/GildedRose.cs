@@ -9,7 +9,11 @@ public class GildedRose
     // Not thrilled about this name
     private const int QualityVaryValue = 1;
     private const int ConjuredQualityDegradationMultiplier = 2;
-    
+    private const string BackstagePassName = "Backstage passes to a TAFKAL80ETC concert";
+    private const string LegendaryItemName = "Sulfuras, Hand of Ragnaros";
+    private const string AgedBrieName = "Aged Brie";
+    private const string ConjuredName = "Conjured";
+
     IList<Item> Items;
 
     public GildedRose(IList<Item> Items)
@@ -78,7 +82,7 @@ public class GildedRose
         // This comparison should probably be improved, not sure yet what makes an item "conjured"
         var multiplier = Items[i].Name switch
         {
-            "Conjured" => ConjuredQualityDegradationMultiplier,
+            ConjuredName => ConjuredQualityDegradationMultiplier,
             _ => 1
         };
         
@@ -97,17 +101,17 @@ public class GildedRose
 
     private bool IsBackstagePass(int i)
     {
-        return Items[i].Name == "Backstage passes to a TAFKAL80ETC concert";
+        return Items[i].Name == BackstagePassName;
     }
 
     private bool IsLegendaryItem(int i)
     {
-        return Items[i].Name == "Sulfuras, Hand of Ragnaros";
+        return Items[i].Name == LegendaryItemName;
     }
 
     private bool IsQualityDecreasingItem(int i)
     {
-        return Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert";
+        return Items[i].Name != AgedBrieName && Items[i].Name != BackstagePassName;
     }
 
     private void UpdateQualityIfSellInDateReached(int i)
@@ -141,12 +145,12 @@ public class GildedRose
     
     private bool IsRegularQualityIncreasingItem(int i)
     {
-        return Items[i].Name != "Aged Brie";
+        return Items[i].Name != AgedBrieName;
     }
 
     private void DecreaseSellIn(int i)
     {
-        if (Items[i].Name == "Sulfuras, Hand of Ragnaros")
+        if (Items[i].Name == LegendaryItemName)
         {
             return;
         }
