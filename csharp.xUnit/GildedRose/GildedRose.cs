@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRoseKata;
 
@@ -6,13 +7,10 @@ public class GildedRose
 {
     private const int MinimumQuality = 0;
     private const int MaximumQuality = 50;
-    // Not thrilled about this name
-    private const int QualityVaryValue = 1;
-    private const int ConjuredQualityDegradationMultiplier = 2;
     private const string BackstagePassName = "Backstage passes to a TAFKAL80ETC concert";
     private const string LegendaryItemName = "Sulfuras, Hand of Ragnaros";
     private const string AgedBrieName = "Aged Brie";
-    private const string ConjuredName = "Conjured";
+    private const string ConjuredName = "Conjured Mana Cake";
 
     IList<Item> Items;
 
@@ -23,138 +21,90 @@ public class GildedRose
 
     public void UpdateQuality()
     {
-        for (var i = 0; i < Items.Count; i++)
+        foreach (Item item in Items)
         {
-            UpdateQuality(i);
-
-            DecreaseSellIn(i);
-
-            UpdateQualityIfSellInDateReached(i);
-        }
-    }
-
-    private void UpdateQuality(int i)
-    {
-        if (IsQualityDecreasingItem(i))
-        {
-            if (IsLegendaryItem(i))
+            switch (item.Name)
             {
-                return;
+                case LegendaryItemName:
+                    break;
+                case AgedBrieName:
+                    ManageAgedBrie(item);
+                    break;
+                case BackstagePassName:
+                    ManageBackstagePass(item);
+                    break;
+                case ConjuredName:
+                    ManageConjuredName(item);
+                    break;
+                default:
+                    DecreaseQualityOfItem(item);
+                    DecreaseSellIn(item);
+                    break;
             }
-
-            DecreaseQualityOfItem(i);
-
-            return;
-        }
-
-        IncreaseQualityOfItem(i);
-
-        if (!IsBackstagePass(i))
-        {
-            return;
-        }
-        
-        
-        // I could turn this into a switch (true), but does that improve anything?
-        if (Items[i].SellIn < 11)
-        {
-            IncreaseQualityOfItem(i);
-        }
-
-        if (Items[i].SellIn < 6)
-        {
-            IncreaseQualityOfItem(i);
         }
     }
 
-    private void DecreaseQualityOfItem(int i)
+    private void ManageAgedBrie(Item item)
     {
-        if (Items[i].Quality <= MinimumQuality)
+        IncreaseQualityOfItem(item);
+        DecreaseSellIn(item);
+
+        if (item.SellIn < 0)
         {
-            return;
+            IncreaseQualityOfItem(item);
         }
-        
-        Items[i].Quality -= GetQualityDegradationValue(i);
     }
 
-    private int GetQualityDegradationValue(int i)
+    private void ManageConjuredName(Item item)
     {
-        // This comparison should probably be improved, not sure yet what makes an item "conjured"
-        var multiplier = Items[i].Name switch
+        if (item.Quality == 3)
         {
-            ConjuredName => ConjuredQualityDegradationMultiplier,
-            _ => 1
-        };
+            DecreaseQualityOfItem(item);
+        }
         
-        return QualityVaryValue * multiplier;
+        DecreaseQualityOfItem(item);
+        DecreaseSellIn(item);
+    }
+
+    private void ManageBackstagePass(Item item)
+    {
+        IncreaseQualityOfItem(item);
+        
+        if (item.SellIn < 11)
+        {
+            IncreaseQualityOfItem(item);
+        }
+
+        if (item.SellIn < 6)
+        {
+            IncreaseQualityOfItem(item);
+        }
+        
+        DecreaseSellIn(item);
+
+        if (item.SellIn < 0)
+        {
+            item.Quality = 0;
+        }
+    }
+
+    private void DecreaseQualityOfItem(Item item)
+    {
+        item.Quality = Math.Max(MinimumQuality, item.Quality - 1);
+
+        if (item.SellIn <= 0 && item.Name != ConjuredName && item.Quality > MinimumQuality)
+        {
+            item.Quality--;
+        }
     }
     
-    private void IncreaseQualityOfItem(int i)
+    private void IncreaseQualityOfItem(Item item)
     {
-        if (Items[i].Quality >= MaximumQuality)
-        {
-            return;
-        }
-        
-        Items[i].Quality += QualityVaryValue;
-    }
-
-    private bool IsBackstagePass(int i)
-    {
-        return Items[i].Name == BackstagePassName;
-    }
-
-    private bool IsLegendaryItem(int i)
-    {
-        return Items[i].Name == LegendaryItemName;
-    }
-
-    private bool IsQualityDecreasingItem(int i)
-    {
-        return Items[i].Name != AgedBrieName && Items[i].Name != BackstagePassName;
-    }
-
-    private void UpdateQualityIfSellInDateReached(int i)
-    {
-        if (Items[i].SellIn >= 0)
-        {
-            return;
-        }
-
-        if (!IsRegularQualityIncreasingItem(i))
-        {
-            IncreaseQualityOfItem(i);
-
-            return;
-        }
-
-        if (IsBackstagePass(i))
-        {
-            Items[i].Quality = 0;
-
-            return;
-        }
-
-        if (IsLegendaryItem(i))
-        {
-            return;
-        }
-
-        DecreaseQualityOfItem(i);
+        item.Quality = Math.Min(MaximumQuality, item.Quality + 1);
     }
     
-    private bool IsRegularQualityIncreasingItem(int i)
+    private void DecreaseSellIn(Item item)
     {
-        return Items[i].Name != AgedBrieName;
-    }
-
-    private void DecreaseSellIn(int i)
-    {
-        if (Items[i].Name == LegendaryItemName)
-        {
-            return;
-        }
-
-        Items[i].SellIn--;
+        item.SellIn--;
     }
 }
