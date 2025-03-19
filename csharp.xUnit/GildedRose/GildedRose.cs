@@ -34,73 +34,71 @@ public class GildedRose
                     ManageBackstagePass(item);
                     break;
                 case ConjuredName:
-                    ManageConjuredName(item);
+                    ManageConjured(item);
                     break;
                 default:
-                    DecreaseQualityOfItem(item);
-                    DecreaseSellIn(item);
+                    ManageDefault(item);
                     break;
             }
         }
     }
 
-    private void ManageAgedBrie(Item item)
+    private void ManageDefault(Item item)
     {
-        IncreaseQualityOfItem(item);
+        var amount = item.SellIn <= 0 ? 2 : 1;
+        DecreaseQualityOfItem(item, amount);
         DecreaseSellIn(item);
-
-        if (item.SellIn < 0)
-        {
-            IncreaseQualityOfItem(item);
-        }
     }
 
-    private void ManageConjuredName(Item item)
+    private void ManageAgedBrie(Item item)
     {
-        if (item.Quality == 3)
-        {
-            DecreaseQualityOfItem(item);
-        }
-        
-        DecreaseQualityOfItem(item);
         DecreaseSellIn(item);
+        
+        var amount = item.SellIn >= 0 ? 1 : 2;
+        IncreaseQualityOfItem(item, amount);
+    }
+
+    private void ManageConjured(Item item)
+    {
+        DecreaseSellIn(item);
+        
+        var amount = item.Quality == 3 ? 2 : 1;
+        DecreaseQualityOfItem(item, amount);
     }
 
     private void ManageBackstagePass(Item item)
     {
-        IncreaseQualityOfItem(item);
-        
-        if (item.SellIn < 11)
-        {
-            IncreaseQualityOfItem(item);
-        }
-
-        if (item.SellIn < 6)
-        {
-            IncreaseQualityOfItem(item);
-        }
-        
         DecreaseSellIn(item);
 
         if (item.SellIn < 0)
         {
-            item.Quality = 0;
+            SetQualityOfItemToMinimum(item);
+        }
+        else
+        {
+            var amount = item.SellIn switch
+            {
+                < 5 => 3,
+                < 10 => 2,
+                _ => 1,
+            };
+            IncreaseQualityOfItem(item, amount);
         }
     }
 
-    private void DecreaseQualityOfItem(Item item)
+    private void SetQualityOfItemToMinimum(Item item)
     {
-        item.Quality = Math.Max(MinimumQuality, item.Quality - 1);
+        item.Quality = MinimumQuality;
+    }
 
-        if (item.SellIn <= 0 && item.Name != ConjuredName && item.Quality > MinimumQuality)
-        {
-            item.Quality--;
-        }
+    private void DecreaseQualityOfItem(Item item, int amount = 1)
+    {
+        item.Quality = Math.Max(MinimumQuality, item.Quality - amount);
     }
     
-    private void IncreaseQualityOfItem(Item item)
+    private void IncreaseQualityOfItem(Item item, int amount = 1)
     {
-        item.Quality = Math.Min(MaximumQuality, item.Quality + 1);
+        item.Quality = Math.Min(MaximumQuality, item.Quality + amount);
     }
     
     private void DecreaseSellIn(Item item)
